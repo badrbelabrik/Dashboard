@@ -161,6 +161,32 @@ function showMessage(text, duration = 5000) {
     }, duration);
 }
 
+//  7. SIDEBAR TOGGLE (BEGINNER FRIENDLY)
+//  *************************************************
+
+document.addEventListener("DOMContentLoaded", function () {
+
+  let toggleBtn = document.getElementById("sidebarToggle");
+  let sidebar = document.querySelector(".sidebar");
+
+  if (!toggleBtn || !sidebar) return;
+
+  toggleBtn.addEventListener("click", function (event) {
+    event.stopPropagation();
+    sidebar.classList.toggle("show");
+  });
+
+  document.addEventListener("click", function (event) {
+    if (
+      window.innerWidth <= 768 &&
+      !sidebar.contains(event.target) &&
+      !toggleBtn.contains(event.target)
+    ) {
+      sidebar.classList.remove("show");
+    }
+  });
+});
+
 document.addEventListener("DOMContentLoaded", () => {
     statistics()
     fillList()
