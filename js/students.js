@@ -8,6 +8,8 @@ function setStudents(students){
 
 function saveStudent(){
     const students = getStudents()
+    const date = new Date()
+    const creationDate = `${date.getDate()}-${date.getMonth()+1}-${date.getFullYear()}-${date.getHours()}:${date.getMinutes().toString().padStart(2, "0")}`
   
     const nomInput = document.getElementById("nomInput")
     const prenomInput = document.getElementById("prenomInput")
@@ -16,7 +18,7 @@ function saveStudent(){
     const statutInput = document.getElementById("statutSelect")
 
     let newId = students.length > 0 ? students[students.length - 1].id + 1 : 1;
-    let studentObj = {id:newId,nom: nomInput.value,prenom:prenomInput.value,email:emailInput.value,group: groupInput.value,status:statutInput.value}
+    let studentObj = {id:newId,nom: nomInput.value,prenom:prenomInput.value,email:emailInput.value,group: groupInput.value,status:statutInput.value,dateInscription:creationDate}
     students.push(studentObj)
 
     setStudents(students)
@@ -38,7 +40,7 @@ function fillList(){
                         <td>${student.email}</td>
                         <td>${student.group}</td>
                         <td><span class="badge ${badge}">${student.status}</span></td>
-                        <td><button class="btn btn-link p-0"><i class="bi bi-eye"></i></button> 
+                        <td><button onClick="showStudentInfos(${studentid})" class="btn btn-link p-0" data-bs-toggle="modal" data-bs-target="#showStudentInfos"><i class="bi bi-eye"></i></button> 
                         <button onClick= "editStudent(${studentid})" class="btn btn-link p-0" data-bs-toggle="modal" data-bs-target="#editStudentModal"><i class="bi bi-pencil-square"></i></button> 
                         <button onClick= "deleteStudent(${studentid})" class="btn btn-link p-0"><i class="bi bi-trash"></i></button> 
                         </td>`
@@ -114,10 +116,11 @@ function saveEditedStudent(){
 }
 
 
-function Search() {
-    const search = document.getElementById("recherche")
-    const students = getStudents()
-    search.addEventListener("keydown", function(event){
+
+    
+    addEventListener("keydown", function(event){
+        const search = document.getElementById("recherche")
+        const students = getStudents()
         if(event.key === "Enter"){
             let word = search.value;    
             const student = students.filter(item => item.nom.toLowerCase().includes(word.toLowerCase()) || 
@@ -136,7 +139,7 @@ function Search() {
                         <td>${st.email}</td>
                         <td>${st.group}</td>
                         <td><span class="badge ${badge}">${st.status}</span></td>
-                        <td><button class="btn btn-link p-0"><i class="bi bi-eye"></i></button> 
+                        <td><button onClick="showStudentInfos(${studentid})" class="btn btn-link p-0" data-bs-toggle="modal" data-bs-target="#showStudentInfos"><i class="bi bi-eye"></i></button> 
                         <button onClick= "editStudent(${studentid})" class="btn btn-link p-0" data-bs-toggle="modal" data-bs-target="#editStudentModal"><i class="bi bi-pencil-square"></i></button> 
                         <button onClick= "deleteStudent(${studentid})" class="btn btn-link p-0"><i class="bi bi-trash"></i></button> 
                         </td>`
@@ -147,6 +150,17 @@ function Search() {
         }
     })
 
+
+
+function showStudentInfos(studentid){
+    const students = getStudents()
+    let student = students.find(item => item.id === studentid)
+    document.getElementById("showNom").textContent = `Nom: ${student.nom}`
+    document.getElementById("showPrenom").textContent = `Prénom: ${student.prenom}`
+    document.getElementById("showEmail").textContent = `Email: ${student.email}`
+    document.getElementById("showGroup").textContent = `Group: ${student.group}`
+    document.getElementById("showStatus").textContent = `Statut: ${student.status}`
+    document.getElementById("showDate").textContent = `Date d'inscription: ${student.dateInscription}`
 }
 
 function showMessage(text, duration = 5000) {
@@ -161,10 +175,33 @@ function showMessage(text, duration = 5000) {
     }, duration);
 }
 
+//  7. SIDEBAR TOGGLE (BEGINNER FRIENDLY)
+//  *************************************************
+
+document.addEventListener("DOMContentLoaded", function () {
+
+  let toggleBtn = document.getElementById("sidebarToggle");
+  let sidebar = document.querySelector(".sidebar");
+
+  if (!toggleBtn || !sidebar) return;
+
+  toggleBtn.addEventListener("click", function (event) {
+    event.stopPropagation();
+    sidebar.classList.toggle("show");
+  });
+
+  document.addEventListener("click", function (event) {
+    if (
+      window.innerWidth <= 768 &&
+      !sidebar.contains(event.target) &&
+      !toggleBtn.contains(event.target)
+    ) {
+      sidebar.classList.remove("show");
+    }
+  });
+});
+
 document.addEventListener("DOMContentLoaded", () => {
     statistics()
     fillList()
-    Search()
-    const students = getStudents()
-    console.log(students)
 })
