@@ -1,102 +1,74 @@
 
-
-
-// ==========================******************
-// **************************************
 /*************************************************
- * STUDENTS DATA (example)
+ * LOCALSTORAGE HELPERS (ALREADY IN YOUR PROJECT)
  *************************************************/
-const students = [
-  {
-    firstname: "samira",
-    lastname: "elbous",
-    absences: ["2025-01-03", "2025-01-15"],
-    tardiness: ["2025-01-10", "2025-02-02"]
-  },
-  {
-    firstname: "soumia",
-    lastname: "lou",
-    absences: ["2025-01-08"],
-    tardiness: []
-  },
-  {
-    firstname: "nawal",
-    lastname: "ham",
-    absences: ["2025-02-01"],
-    tardiness: ["2025-01-05"]
-  },
-  {
-    firstname: "wiam",
-    lastname: "kaj",
-    absences: [],
-    tardiness: ["2025-01-20"]
-  }
-];
+function getStudents() {
+  return JSON.parse(localStorage.getItem("students")) || [];
+}
+
+function setStudents(students) {
+  localStorage.setItem("students", JSON.stringify(students));
+}
 
 /*************************************************
- * CURRENT MONTH & YEAR
+ * CURRENT MONTH & YEAR (AUTO)
  *************************************************/
-const currentMonth = 0; // January (0 = Jan)
-const currentYear = 2025;
+const currentMonth = new Date().getMonth();     // 0 - 11
+const currentYear = new Date().getFullYear();  // e.g. 2025
 
 /*************************************************
  * CHECK IF DATE IS IN CURRENT MONTH
  *************************************************/
 function isInMonth(dateString, month, year) {
   const date = new Date(dateString);
-  return (
-    date.getMonth() === month &&
-    date.getFullYear() === year
-  );
+  return date.getMonth() === month && date.getFullYear() === year;
 }
 
 /*************************************************
  * CALCULATE ABSENCE RATE
  *************************************************/
-function calculateAbsenceRate(students, month, year) {
+function calculateAbsenceRate(month, year) {
+  const students = getStudents();
+  if (students.length === 0) return "0.0";
+
   let absentStudents = 0;
 
   students.forEach(student => {
-    const hasAbsence = student.absences.some(date =>
-      isInMonth(date, month, year)
-    );
-
-    if (hasAbsence) {
+    const absences = student.absences || [];
+    if (absences.some(date => isInMonth(date, month, year))) {
       absentStudents++;
     }
   });
 
-  const rate = (absentStudents / students.length) * 100;
-  return rate.toFixed(1);
+  return ((absentStudents / students.length) * 100).toFixed(1);
 }
 
 /*************************************************
  * CALCULATE TARDINESS RATE
  *************************************************/
-function calculateTardinessRate(students, month, year) {
+function calculateTardinessRate(month, year) {
+  const students = getStudents();
+  if (students.length === 0) return "0.0";
+
   let tardyStudents = 0;
 
   students.forEach(student => {
-    const hasTardiness = student.tardiness.some(date =>
-      isInMonth(date, month, year)
-    );
-
-    if (hasTardiness) {
+    const tardiness = student.tardiness || [];
+    if (tardiness.some(date => isInMonth(date, month, year))) {
       tardyStudents++;
     }
   });
 
-  const rate = (tardyStudents / students.length) * 100;
-  return rate.toFixed(1);
+  return ((tardyStudents / students.length) * 100).toFixed(1);
 }
 
 /*************************************************
  * UPDATE DASHBOARD CARDS
  *************************************************/
 function updateStatsCards() {
-  const absenceRate = calculateAbsenceRate(students, currentMonth, currentYear);
-  const tardinessRate = calculateTardinessRate(students, currentMonth, currentYear);
-  const attendanceRate = (100 - absenceRate).toFixed(1);
+  const absenceRate = calculateAbsenceRate(currentMonth, currentYear);
+  const tardinessRate = calculateTardinessRate(currentMonth, currentYear);
+  const attendanceRate = (100 - parseFloat(absenceRate)).toFixed(1);
 
   document.querySelector(".absence-rate").textContent = absenceRate + "%";
   document.querySelector(".tardiness-rate").textContent = tardinessRate + "%";
@@ -106,12 +78,12 @@ function updateStatsCards() {
 /*************************************************
  * TOP 3 MOST ABSENT STUDENTS
  *************************************************/
-function top3MostAbsent(students, month, year) {
-  return students
+function top3MostAbsent(month, year) {
+  return getStudents()
     .map(student => ({
-      firstname: student.firstname,
-      lastname: student.lastname,
-      count: student.absences.filter(date =>
+      nom: student.nom,
+      prenom: student.prenom,
+      count: (student.absences || []).filter(date =>
         isInMonth(date, month, year)
       ).length
     }))
@@ -122,12 +94,12 @@ function top3MostAbsent(students, month, year) {
 /*************************************************
  * TOP 3 MOST TARDY STUDENTS
  *************************************************/
-function top3MostTardy(students, month, year) {
-  return students
+function top3MostTardy(month, year) {
+  return getStudents()
     .map(student => ({
-      firstname: student.firstname,
-      lastname: student.lastname,
-      count: student.tardiness.filter(date =>
+      nom: student.nom,
+      prenom: student.prenom,
+      count: (student.tardiness || []).filter(date =>
         isInMonth(date, month, year)
       ).length
     }))
@@ -142,26 +114,22 @@ function fillAbsenceTable() {
   const tableBody = document.getElementById("absenceTableBody");
   tableBody.innerHTML = "";
 
-  const topAbsent = top3MostAbsent(students, currentMonth, currentYear);
+  const topAbsent = top3MostAbsent(currentMonth, currentYear);
 
   topAbsent.forEach((student, index) => {
     const initials =
-      student.firstname[0].toUpperCase() +
-      student.lastname[0].toUpperCase();
+      student.prenom[0].toUpperCase() +
+      student.nom[0].toUpperCase();
 
     tableBody.innerHTML += `
       <tr>
         <td>${index + 1}</td>
         <td>
-          <span class="badge bg-primary rounded-2 me-2"
-            style="width:30px;height:25px;display:inline-flex;
-            align-items:center;justify-content:center;">
-            ${initials}
-          </span>
-          ${student.firstname} ${student.lastname}
+          <span class="badge bg-primary me-2">${initials}</span>
+          ${student.prenom} ${student.nom}
         </td>
         <td>
-          <span class="badge border border-danger text-danger rounded-4 px-3">
+          <span class="badge border border-danger text-danger">
             ${student.count} Absences
           </span>
         </td>
@@ -177,26 +145,22 @@ function fillTardinessTable() {
   const tableBody = document.getElementById("tardinessTableBody");
   tableBody.innerHTML = "";
 
-  const topTardy = top3MostTardy(students, currentMonth, currentYear);
+  const topTardy = top3MostTardy(currentMonth, currentYear);
 
   topTardy.forEach((student, index) => {
     const initials =
-      student.firstname[0].toUpperCase() +
-      student.lastname[0].toUpperCase();
+      student.prenom[0].toUpperCase() +
+      student.nom[0].toUpperCase();
 
     tableBody.innerHTML += `
       <tr>
         <td>${index + 1}</td>
         <td>
-          <span class="badge bg-primary rounded-2 me-2"
-            style="width:30px;height:25px;display:inline-flex;
-            align-items:center;justify-content:center;">
-            ${initials}
-          </span>
-          ${student.firstname} ${student.lastname}
+          <span class="badge bg-primary me-2">${initials}</span>
+          ${student.prenom} ${student.nom}
         </td>
         <td>
-          <span class="badge border border-warning text-warning rounded-4 px-3">
+          <span class="badge border border-warning text-warning">
             ${student.count} Tardiness
           </span>
         </td>
@@ -205,40 +169,12 @@ function fillTardinessTable() {
   });
 }
 
-
-
-
-
-// *******************************
-/*************************************************
- * 7. SIDEBAR TOGGLE (BEGINNER FRIENDLY)
- *************************************************/
-
-document.addEventListener("DOMContentLoaded", function () {
-
-  let toggleBtn = document.getElementById("sidebarToggle");
-  let sidebar = document.querySelector(".sidebar");
-
-  if (!toggleBtn || !sidebar) return;
-
-  toggleBtn.addEventListener("click", function (event) {
-    event.stopPropagation();
-    sidebar.classList.toggle("show");
-  });
-
-  document.addEventListener("click", function (event) {
-    if (
-      window.innerWidth <= 768 &&
-      !sidebar.contains(event.target) &&
-      !toggleBtn.contains(event.target)
-    ) {
-      sidebar.classList.remove("show");
-    }
-  });
-});
 /*************************************************
  * INITIAL LOAD
  *************************************************/
-updateStatsCards();
-fillAbsenceTable();
-fillTardinessTable();
+document.addEventListener("DOMContentLoaded", () => {
+  updateStatsCards();
+  fillAbsenceTable();
+  fillTardinessTable();
+});
+
