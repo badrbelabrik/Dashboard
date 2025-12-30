@@ -1,8 +1,8 @@
 function getStudents(){
-    return JSON.parse(localStorage.getItem("students")) || []
+    return JSON.parse(localStorage.getItem("enaa_students")) || []
 }
 function setStudents(students){
-    localStorage.setItem("students",JSON.stringify(students))
+    localStorage.setItem("enaa_students",JSON.stringify(students))
 }
 
 
@@ -178,27 +178,33 @@ function showMessage(text, duration = 5000) {
 //  7. SIDEBAR TOGGLE (BEGINNER FRIENDLY)
 //  *************************************************
 
-document.addEventListener("DOMContentLoaded", function () {
+const menuToggle = document.getElementById('sidebarToggle');
+const sidebar = document.getElementById('sidebar');
+const sidebarOverlay = document.getElementById('sidebarOverlay');
 
-  let toggleBtn = document.getElementById("sidebarToggle");
-  let sidebar = document.querySelector(".sidebar");
+menuToggle.addEventListener('click', () => {
+  sidebar.classList.toggle('show');
+  sidebarOverlay.classList.toggle('show');
+});
 
-  if (!toggleBtn || !sidebar) return;
+sidebarOverlay.addEventListener('click', () => {
+  sidebar.classList.remove('show');
+  sidebarOverlay.classList.remove('show');
+});
 
-  toggleBtn.addEventListener("click", function (event) {
-    event.stopPropagation();
-    sidebar.classList.toggle("show");
+ 
+if (window.innerWidth <= 768) {
+  const navLinks = sidebar.querySelectorAll('.nav-link');
+  navLinks.forEach(link => {
+    link.addEventListener('click', () => {
+      sidebar.classList.remove('show');
+      sidebarOverlay.classList.remove('show');
+    });
   });
+}
 
-  document.addEventListener("click", function (event) {
-    if (
-      window.innerWidth <= 768 &&
-      !sidebar.contains(event.target) &&
-      !toggleBtn.contains(event.target)
-    ) {
-      sidebar.classList.remove("show");
-    }
-  });
+document.getElementById('sidebarToggle')?.addEventListener('click', function() {
+  document.getElementById('sidebar').classList.toggle('show');
 });
 
 document.addEventListener("DOMContentLoaded", () => {
