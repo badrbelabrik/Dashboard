@@ -40,9 +40,9 @@ function fillList(){
                         <td>${student.email}</td>
                         <td>${student.group}</td>
                         <td><span class="badge ${badge}">${student.status}</span></td>
-                        <td><button onClick="showStudentInfos(${studentid})" class="btn btn-link p-0" data-bs-toggle="modal" data-bs-target="#showStudentInfos"><i class="bi bi-eye"></i></button> 
-                        <button onClick= "editStudent(${studentid})" class="btn btn-link p-0" data-bs-toggle="modal" data-bs-target="#editStudentModal"><i class="bi bi-pencil-square"></i></button> 
-                        <button onClick= "deleteStudent(${studentid})" class="btn btn-link p-0"><i class="bi bi-trash"></i></button> 
+                        <td><button onClick="showStudentInfos(${studentid})" class="btn btn-link p-0 text-white" data-bs-toggle="modal" data-bs-target="#showStudentInfos"><i class="bi bi-eye"></i></button> 
+                        <button onClick= "editStudent(${studentid})" class="btn btn-link p-0 text-white" data-bs-toggle="modal" data-bs-target="#editStudentModal"><i class="bi bi-pencil-square"></i></button> 
+                        <button onClick= "deleteStudent(${studentid})" class="btn btn-link p-0 text-white"><i class="bi bi-trash"></i></button> 
                         </td>`
         list.appendChild(tr)
     }
@@ -202,6 +202,8 @@ if (window.innerWidth <= 768) {
     });
   });
 }
+
+
 
 document.getElementById('sidebarToggle')?.addEventListener('click', function() {
   document.getElementById('sidebar').classList.toggle('show');
