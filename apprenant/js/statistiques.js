@@ -1,3 +1,20 @@
+function getStudents(){
+    return JSON.parse(localStorage.getItem("enaa_students")) || []
+}
+function getActiveStudent(){
+    return JSON.parse(sessionStorage.getItem("activeStudent"))
+}
+const activeStudent = getActiveStudent()
+const student = document.getElementById("studentName")
+student.textContent = `${activeStudent.prenom} ${activeStudent.nom}` 
+
+
+
+
+
+
+// Sidebar toggle
+
 const menuToggle = document.getElementById('sidebarToggle');
 const sidebar = document.getElementById('sidebar');
 const sidebarOverlay = document.getElementById('sidebarOverlay');
