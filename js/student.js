@@ -175,8 +175,7 @@ function showMessage(text, duration = 5000) {
     }, duration);
 }
 
-//  7. SIDEBAR TOGGLE (BEGINNER FRIENDLY)
-//  *************************************************
+//  7. SIDEBAR TOGGLE 
 
 const menuToggle = document.getElementById('sidebarToggle');
 const sidebar = document.getElementById('sidebar');
